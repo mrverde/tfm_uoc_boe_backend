@@ -118,5 +118,5 @@ For running tests on your local machine.
 
 2. Run the pytest.
 ```bash
-pytest -vv .
+python -m pytest -vv .
 ```
