@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: tfm_uoc_boe_backend:${TFM_UOC_BOE_BACKEND_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    environment:
+      TFM_UOC_BOE_BACKEND_HOST: 0.0.0.0
