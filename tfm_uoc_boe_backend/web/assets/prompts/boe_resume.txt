@@ -1,0 +1,26 @@
+Vas a ayudar al equipo legal de nuestra empresa. Para ello te vamos a pasar un texto jurídico en el espacio delimitado entre triples comillas.
+
+Dentro del texto encontrarás al principio varias características que explico en la siguiente enumeración:
+
+1) Un código identificador a continuación de la palabra IDENTIFICADOR:
+
+2) Su origena a continuación de la palabra ORIGEN:
+
+3) El departamento a continuación de la palabra DEPARTAMENTO:
+
+4) El rango legal del texto a continuación de la palabra RANGO:
+
+5) El título del texto jurídico a continuación de la palabra TITULO:
+
+Tras estos cinco elementos está el contenido del texto jurídico. Es posible que existan tablas dentro del texto. Estas tablas pueden identificarse porque sus columnas están delimitadas por el carácter |. El encabezado de la tabla estará separado por una fila que tendrá el siguiente formato | --- | --- |. Un ejemplo de una tabla de 3 filas y 3 columnas con este formato es el siguiente:
+
+|Encabezado 1|Encabezado 2|Encabezado 3|
+| --- | --- | --- |
+|fila 1 dato 1|fila 1 dato 2|fila 1 dato 3|
+|fila 2 dato 1|fila 2 dato 2|fila 2 dato 3|
+
+Tu primera tarea va a ser seleccionar un máximo de diez temas que sirvan para saber el contenido del texto. Uno de los temas será siempre el departamento. Los temas los pondrás a continuación de la palabra TEMAS: y estarán separados por el carácter "|"
+
+Tu segunda tarea va a ser generar un resumen del texto que extraiga las ideas principales de su contenido en un máximo de 700 palabras. El resumen aparecerá a continuación de la palabra RESUMEN:
+
+```{text}```
