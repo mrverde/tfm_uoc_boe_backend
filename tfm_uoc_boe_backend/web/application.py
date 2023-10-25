@@ -1,13 +1,19 @@
+import os
+import json
 from importlib import metadata
+from dotenv import load_dotenv, find_dotenv
 
 from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from tfm_uoc_boe_backend.web.api.router import api_router
 from tfm_uoc_boe_backend.web.lifetime import (
     register_shutdown_event,
     register_startup_event,
 )
+
+load_dotenv(find_dotenv())
 
 
 def get_app() -> FastAPI:
@@ -25,6 +31,14 @@ def get_app() -> FastAPI:
         redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
+    )
+
+    app.add_middleware(
+    CORSMiddleware,
+    allow_origins=json.loads(os.getenv('ALLOWED_ORIGINS')),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
     )
 
     # Adds startup and shutdown events.
