@@ -18,13 +18,18 @@ def chatGPT_boe_resume(boe_document:str, model:str) -> str:
     prompt = read_txt_file("tfm_uoc_boe_backend/web/assets/prompts/boe_resume.txt").format(text=boe_document)
 
     messages = [{"role": "user", "content": prompt}]
-    response = openai.ChatCompletion.create(
+
+    try:
+        response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
         temperature=0,
-    )
+        )
 
-    return split_response_in_topics_and_resume(response.choices[0].message["content"])
+        return split_response_in_topics_and_resume(response.choices[0].message["content"])
+
+    except openai.InvalidRequestError as e:
+        return f"Too long BOE: {e}"
 
 
 def split_response_in_topics_and_resume(chatgpt_response):
