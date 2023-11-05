@@ -101,7 +101,7 @@ def extract_boe_summary_info(
     return complete_data
 
 
-def generate_boe_document(boe_summary: list, export_txt:None|bool= None) -> list:
+def generate_boe_resumes(boe_summary: list, export_txt:None|bool= None) -> list:
     """
     Takes the result of extract_boe_summary_info and extracts all the documents for each boe summary registry
     """
@@ -109,48 +109,7 @@ def generate_boe_document(boe_summary: list, export_txt:None|bool= None) -> list
 
     for boe in boe_summary:
         #print(URL_BOE + boe[11])
-        x = requests.get(URL_BOE + boe[11])
-        assert x.status_code == 200
-
-        boe_document = BeautifulSoup(x.text, features="xml")
-
-        out_txt = ""
-
-        out_txt += f"IDENTIFICADOR: {boe_document.find('identificador').text}\n"
-        out_txt += f"ORIGEN: {boe_document.find('origen_legislativo').text}\n"
-        out_txt += f"DEPARTAMENTO: {boe_document.find('departamento').text}\n"
-        out_txt += f"RANGO: {boe_document.find('rango').text}\n"
-        out_txt += f"TITULO: {boe_document.find('titulo').text}\n"
-
-        for txt in boe_document.css.select('documento > texto')[0].children:
-            if hasattr(txt, 'attrs') and len(txt.attrs) > 0:
-                if 'tabla' in txt.get('class'):
-                    t_header = txt.find('caption')
-                    if t_header:
-                        t_header = t_header.text.replace('\n', '')
-                        out_txt += f"TABLA: {t_header}\n"
-
-                    col_names = txt.find('colgroup')
-                    if col_names:
-                        col_names_vals = set(col_names.text.split("\n"))
-                        if col_names_vals == 1 and '' in col_names_vals:
-                            col_names = md(str(txt.find('colgroup'))).replace('\n', '')
-                            out_txt += f"{col_names}\n"
-
-                    for row in txt.find_all('tr'):
-                        row_v = md(str(row)).replace("\n", "").replace("||", "|\n|")
-                        out_txt += f"{md(str(row_v))}\n"
-
-                elif 'parrafo' not in txt.get('class'):
-                    out_txt += f"\n{txt.text}\n"
-
-                else:
-                    out_txt += txt.text
-
-            else:
-                out_txt += txt.text
-
-        out_txt = normalize("NFKD", out_txt).replace(".o", "º").replace("\\\\*", "").replace("\\*", "")
+        out_txt = generate_boe_resume(URL_BOE + boe[11])
 
         if export_txt:
             if not os.path.exists('output'):
@@ -162,6 +121,54 @@ def generate_boe_document(boe_summary: list, export_txt:None|bool= None) -> list
         complete_docs.append(out_txt)
 
     return complete_docs
+
+def generate_boe_resume(boe_xml_address: str):
+    """
+    Extracts the information from a XML boe
+    """
+    x = requests.get(URL_BOE + boe_xml_address)
+
+    assert x.status_code == 200
+
+    boe_document = BeautifulSoup(x.text, features="xml")
+
+    out_txt = ""
+
+    out_txt += f"IDENTIFICADOR: {boe_document.find('identificador').text}\n"
+    out_txt += f"ORIGEN: {boe_document.find('origen_legislativo').text}\n"
+    out_txt += f"DEPARTAMENTO: {boe_document.find('departamento').text}\n"
+    out_txt += f"RANGO: {boe_document.find('rango').text}\n"
+    out_txt += f"TITULO: {boe_document.find('titulo').text}\n"
+
+    for txt in boe_document.css.select('documento > texto')[0].children:
+        if hasattr(txt, 'attrs') and len(txt.attrs) > 0:
+            if 'tabla' in txt.get('class'):
+                t_header = txt.find('caption')
+                if t_header:
+                    t_header = t_header.text.replace('\n', '')
+                    out_txt += f"TABLA: {t_header}\n"
+
+                col_names = txt.find('colgroup')
+                if col_names:
+                    col_names_vals = set(col_names.text.split("\n"))
+                    if col_names_vals == 1 and '' in col_names_vals:
+                        col_names = md(str(txt.find('colgroup'))).replace('\n', '')
+                        out_txt += f"{col_names}\n"
+
+                for row in txt.find_all('tr'):
+                    row_v = md(str(row)).replace("\n", "").replace("||", "|\n|")
+                    out_txt += f"{md(str(row_v))}\n"
+
+            elif 'parrafo' not in txt.get('class'):
+                out_txt += f"\n{txt.text}\n"
+
+            else:
+                out_txt += txt.text
+
+        else:
+            out_txt += txt.text
+
+    return normalize("NFKD", out_txt).replace(".o", "º").replace("\\\\*", "").replace("\\*", "")
 
 
 def process_date_yyyymmdd_to_vars(date:str|None) -> tuple:

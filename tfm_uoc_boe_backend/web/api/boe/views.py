@@ -1,13 +1,25 @@
 from fastapi import APIRouter
-from tfm_uoc_boe_backend.services.boe import generate_boe_document, extract_boe_summary_info, process_date_yyyymmdd_to_vars
+from tfm_uoc_boe_backend.services.boe import generate_boe_resumes, extract_boe_summary_info, process_date_yyyymmdd_to_vars, generate_boe_resume
 
 from tfm_uoc_boe_backend.web.api.boe.schema import Boe
 
 router = APIRouter()
 
-
 @router.get("/boe")
-async def get_boe_data(date:None|str=None) -> list:
+async def get_boe(boe_xml_address: str) -> str:
+    """
+    Obtains a processed boe document using the xml address of each document.
+
+    :param boe_xml_address: str
+
+    :returns: A str with the boe text
+    """
+
+    return generate_boe_resume(boe_xml_address)
+
+
+@router.get("/getallboe")
+async def get_all_boe_data(date:None|str=None) -> list:
     """
     Obtains the complete content of all the BOEs of a specific day.
     If the date parameter is not provided, it returns those of the current day.
@@ -19,7 +31,7 @@ async def get_boe_data(date:None|str=None) -> list:
 
     year, month, day = process_date_yyyymmdd_to_vars(date)
 
-    return generate_boe_document(extract_boe_summary_info(day=day, month=month, year=year))
+    return generate_boe_resumes(extract_boe_summary_info(day=day, month=month, year=year))
 
 
 @router.get("/summaryboe")
