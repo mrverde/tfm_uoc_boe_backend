@@ -109,7 +109,7 @@ def generate_boe_resumes(boe_summary: list, export_txt:None|bool= None) -> list:
 
     for boe in boe_summary:
         #print(URL_BOE + boe[11])
-        out_txt = generate_boe_resume(URL_BOE + boe[11])
+        out_txt = generate_boe_resume(boe[11])
 
         if export_txt:
             if not os.path.exists('output'):
