@@ -29,7 +29,10 @@ def chatGPT_boe_resume(boe_document:str, model:str) -> str:
         return split_response_in_topics_and_resume(response.choices[0].message["content"])
 
     except openai.InvalidRequestError as e:
-        return f"Too long BOE: {e}"
+        return {"topics": [], "resume": f"Too long BOE: {e}", "status": "error"}
+
+    except openai.error.RateLimitError as e:
+        return {"topics": [], "resume": f"Rate Limit Error: {e}", "status": "error"}
 
 
 def split_response_in_topics_and_resume(chatgpt_response):
@@ -45,4 +48,4 @@ def split_response_in_topics_and_resume(chatgpt_response):
         for idx, topic in enumerate(topics):
             topics[idx] = re.sub(regex, repl, topic)
 
-    return {"topics": topics, "resume": resume}
+    return {"topics": topics, "resume": resume, "status": "ok"}

@@ -12,3 +12,4 @@ class ChatGPTResumeOutput(BaseModel):
 
     topics: list[str]
     resume: str
+    status: str
