@@ -26,7 +26,7 @@ def chatGPT_boe_resume(boe_document:str, model:str) -> str:
         temperature=0,
         )
 
-        return split_response_in_topics_and_resume(response.choices[0].message["content"])
+        return split_response_in_topics_and_resume(response["choices"][0]["message"]["content"])
 
     except openai.InvalidRequestError as e:
         return {"topics": [], "resume": f"Too long BOE: {e}", "status": "error"}
