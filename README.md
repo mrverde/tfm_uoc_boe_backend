@@ -1,122 +1,83 @@
-# tfm_uoc_boe_backend
+# TFM UOC BOE Backend
 
-This project was generated using fastapi_template.
+Este repositorio contiene el backend del trabajo final de máster. Consiste en una aplicación que se integra con las APIs del BOE y ChatGPT para hacer resumenes de los documentos del Boletin Oficial del Estado.
 
-## Poetry
+Esta aplicación usa Python, FastAPI y diferentes tecnologías. se generó a partir del repo [FastAPI-template](https://github.com/s3rius/FastAPI-template).
 
-This project uses poetry. It's a modern dependency management
-tool.
 
-To run the project use this set of commands:
+En primer lugar es necesario tener instalado poetry globalmente. Esto lo conseguimos usando:
+
+```bash
+pipx install poetry
+```
+
+En linux es posible que no tengamos por defecto pipx instalado, por lo que será necesario instalarlo también. En distribuciones debian se hace mediante:
+```bash
+sudo apt install pipx
+```
+
+Después renombraremos el archivo .env.bak a .env y añadiremos los valores de las variables de entorno.
+
+Por último instalaremos las librerías
 
 ```bash
 poetry install
+```
+
+Para ejecutar el proyecto usaremos el comando:
+```bash
 poetry run python -m tfm_uoc_boe_backend
 ```
 
-This will start the server on the configured host.
+Por defecto las variables de entorno exponen el puerto 8000, por lo que se puede acceder al backend a través de http://localhost:8000
 
-You can find swagger documentation at `/api/docs`.
 
-You can read more about poetry here: https://python-poetry.org/
+Para acceder a la documentación de swagger usaremos la [siguiente dirección](http://localhost:8000/api/docs).
+
 
 ## Docker
 
-You can start the project with docker using this command:
+Puede iniciarse el proyecto con docker usando el siguiente comando::
 
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . up --build
 ```
 
-If you want to develop in docker with autoreload add `-f deploy/docker-compose.dev.yml` to your docker command.
-Like this:
+Para desarrollar en docker con la autorecarga hay que usar el siguiente comando de docker:
 
 ```bash
 docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . up --build
 ```
 
-This command exposes the web application on port 8000, mounts current directory and enables autoreload.
-
-But you have to rebuild image every time you modify `poetry.lock` or `pyproject.toml` with this command:
+Este comando expone la aplicación en el puerto 8000, pero si se modifican los archivos `poetry.lock` o `pyproject.toml` habrá que rehacer la imagen de docker con el siguiente comando:
 
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . build
 ```
 
-## Project structure
+## Estructura del proyecto
 
 ```bash
 $ tree "tfm_uoc_boe_backend"
 tfm_uoc_boe_backend
-├── conftest.py  # Fixtures for all tests.
-├── __main__.py  # Startup script. Starts uvicorn.
-├── services  # Package for different external services such as rabbit or redis etc.
-├── settings.py  # Main configuration settings for project.
-├── static  # Static content.
-├── tests  # Tests for project.
-└── web  # Package contains web server. Handlers, startup config.
-    ├── api  # Package with all handlers.
-    │   └── router.py  # Main router.
-    ├── application.py  # FastAPI application configuration.
-    └── lifetime.py  # Contains actions to perform on startup and shutdown.
+├── conftest.py  # Fixtures para todas las pruebas
+├── __main__.py  # Script de inicio. Inicia uvicorn.
+├── services  # Librerías para los servicios externos como rabbit, redis, etc.
+├── settings.py  # Ajustes principales de configuración del proyecto.
+├── static  # Contenido estático.
+├── tests  # Tests del proyecto.
+└── web  # Paquete que contiene el servidor web, los handlers, la configuración de inicio...
+    ├── api  # Paquete con todos los handlers handlers.
+    │   └── router.py  # Enrutador principal.
+    ├── application.py  # Configuración de la aplicación FastAPI.
+    └── lifetime.py  # Acciones a realizar en el arranque y finalización de la aplicación.
 ```
 
-## Configuration
 
-This application can be configured with environment variables.
+## Ejecutar tests
 
-You can create `.env` file in the root directory and place all
-environment variables here.
+Para ejecutarlos en local se hace con python y pytest:
 
-All environment variables should start with "TFM_UOC_BOE_BACKEND_" prefix.
-
-For example if you see in your "tfm_uoc_boe_backend/settings.py" a variable named like
-`random_parameter`, you should provide the "TFM_UOC_BOE_BACKEND_RANDOM_PARAMETER"
-variable to configure the value. This behaviour can be changed by overriding `env_prefix` property
-in `tfm_uoc_boe_backend.settings.Settings.Config`.
-
-An example of .env file:
-```bash
-TFM_UOC_BOE_BACKEND_RELOAD="True"
-TFM_UOC_BOE_BACKEND_PORT="8000"
-TFM_UOC_BOE_BACKEND_ENVIRONMENT="dev"
-```
-
-You can read more about BaseSettings class here: https://pydantic-docs.helpmanual.io/usage/settings/
-
-## Pre-commit
-
-To install pre-commit simply run inside the shell:
-```bash
-pre-commit install
-```
-
-pre-commit is very useful to check your code before publishing it.
-It's configured using .pre-commit-config.yaml file.
-
-By default it runs:
-* black (formats your code);
-* mypy (validates types);
-* isort (sorts imports in all files);
-* flake8 (spots possible bugs);
-
-
-You can read more about pre-commit here: https://pre-commit.com/
-
-
-## Running tests
-
-If you want to run it in docker, simply run:
-
-```bash
-docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . run --build --rm api pytest -vv .
-docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . down
-```
-
-For running tests on your local machine.
-
-
-2. Run the pytest.
 ```bash
 python -m pytest -vv .
 ```
